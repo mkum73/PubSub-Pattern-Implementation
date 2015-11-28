@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Implementing Pub sub</title>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+	  <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+</head>
+<body>
+</body>
+
+<script>
+
+(function(myObject) {
+ 	
+    // Storage for topics that can be broadcast
+    // or listened to
+    var topics = {};
+ 
+
+ 
+    // Publish or broadcast events of interest
+    // with a specific topic name and arguments
+    // such as the data to pass along
+    myObject.publish = function( topic, args ) {
+ 
+        if ( !topics[topic] ) {
+            return false;
+        }
+ 
+        var subscribers = topics[topic],
+            no_of_subscribers = subscribers.length;
+ 
+        while (no_of_subscribers--) {
+            subscribers[no_of_subscribers].func( topic, args );//calling method one by one for subscribers
+
+        }
+ 
+        return this;
+    };
+ 
+    // Subscribe to events of interest
+    // with a specific topic name and a
+    // callback function, to be executed
+    // when the topic/event is observed
+    myObject.subscribe = function( topic, func ) {
+ 
+        if (!topics[topic]) {
+            topics[topic] = [];
+        }
+ 
+        
+        topics[topic].push({
+            func: func
+        });
+    };
+ 
+}( pubsub ));
+
+var messageLogger = function ( topics, data ) {
+    console.log( "Logging: " + topics + ": " + data );
+};
+ var messageLogger2 = function ( topics, data ) {
+    console.log( "Logginggggggggg: " + topics + ": " + data );
+};
+// Subscribers listen for topics they have subscribed to and
+// invoke a callback function (e.g messageLogger) once a new
+// notification is broadcast on that topic
+var subscription = pubsub.subscribe( "inbox/newMessage", messageLogger );
+var subscription = pubsub.subscribe( "inbox/newMessage2", messageLogger2 );
+ 
+// Publishers are in charge of publishing topics or notifications of
+// interest to the application. e.g:
+var data = "hello World";
+pubsub.publish( "inbox/newMessage", data);
+
+</script>
+</body>
+</html>
